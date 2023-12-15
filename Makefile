@@ -1,5 +1,5 @@
 build:
-	gcc -Wall -std=c99 ./src/*.c -o bitminton
+	gcc -Wall -std=c99 ./src/*.c -lSDL2 -o bitminton
 
 run:
 	./bitminton
