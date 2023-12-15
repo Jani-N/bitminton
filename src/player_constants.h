@@ -1,0 +1,5 @@
+#define TILE_ATLAS_PLAYER_COL 7
+#define TILE_ATLAS_PLAYER_ROW 0
+
+#define PLAYER_SPEED 80
+

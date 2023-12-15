@@ -1,18 +1,22 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include "./constants.h"
+#include "./player_constants.h"
 
 unsigned short game_is_running = FALSE;
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
+
+SDL_Texture* tile_atlas_texture;
 
 int last_frame_time = 0;
 
 struct player {
     float x;
     float y;
-    float width;
-    float height;
+    unsigned int direction;
+    SDL_Rect tile;
 } player;
 
 unsigned short initialize_window(void) {
@@ -46,11 +50,32 @@ unsigned short initialize_window(void) {
     return TRUE;
 }
 
-void setup(void) {
+unsigned int setup(void) {
+    SDL_Surface* tile_atlas_surface = IMG_Load("resources/tile_atlas.png");
+    if (!tile_atlas_surface) {
+        fprintf(stderr, "Error creating tile atlas surface.\n");
+        return FALSE;
+    }
+
+    tile_atlas_texture = SDL_CreateTextureFromSurface(renderer, tile_atlas_surface);
+    SDL_FreeSurface(tile_atlas_surface);
+    if (!tile_atlas_texture) {
+        fprintf(stderr, "Error creating tile atlas texture.\n");
+        return FALSE;
+    }
+
+    SDL_Rect player_tile_rect;
+    player_tile_rect.x = TILE_ATLAS_PLAYER_COL * TILE_SIZE;
+    player_tile_rect.y = TILE_ATLAS_PLAYER_ROW * TILE_SIZE;
+    player_tile_rect.w = TILE_SIZE;
+    player_tile_rect.h = TILE_SIZE;
+
     player.x = 20;
     player.y = 20;
-    player.width = 15;
-    player.height = 15;
+    player.direction = 0;
+    player.tile = player_tile_rect;
+
+    return TRUE;
 }
 
 void process_input(void) {
@@ -64,6 +89,18 @@ void process_input(void) {
         case SDL_KEYDOWN:
             if (event.key.keysym.sym == SDLK_ESCAPE) {
                 game_is_running = FALSE;
+            }
+            if (event.key.keysym.sym == SDLK_UP) {
+                player.direction = SDLK_UP;
+            }
+            if (event.key.keysym.sym == SDLK_DOWN) {
+                player.direction = SDLK_DOWN;
+            }
+            if (event.key.keysym.sym == SDLK_LEFT) {
+                player.direction = SDLK_LEFT;
+            }
+            if (event.key.keysym.sym == SDLK_RIGHT) {
+                player.direction = SDLK_RIGHT;
             }
             break;
     }
@@ -80,9 +117,28 @@ void update(void) {
     float delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0f;
 
     last_frame_time = SDL_GetTicks();
+    int x_velocity = 0;
+    int y_velocity = 0;
 
-    player.x += 70 * delta_time;
-    player.y += 50 * delta_time;
+    if (player.direction == SDLK_UP
+            && player.direction != SDLK_DOWN) {
+        y_velocity = -PLAYER_SPEED;
+    }
+    if (player.direction == SDLK_DOWN
+            && player.direction != SDLK_UP) {
+        y_velocity = PLAYER_SPEED;
+    }
+    if (player.direction == SDLK_LEFT
+            && player.direction != SDLK_RIGHT) {
+        x_velocity = -PLAYER_SPEED;
+    }
+    if (player.direction == SDLK_RIGHT
+            && player.direction != SDLK_LEFT) {
+        x_velocity = PLAYER_SPEED;
+    }
+
+    player.x += x_velocity * delta_time;
+    player.y += y_velocity * delta_time;
 }
 
 void render(void) {
@@ -92,25 +148,28 @@ void render(void) {
     SDL_Rect player_rect = {
         (int) player.x,
         (int) player.y,
-        (int) player.width,
-        (int) player.height
+        (int) player.tile.w,
+        (int) player.tile.h
     };
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderFillRect(renderer, &player_rect);
+    SDL_RenderCopy(
+            renderer,
+            tile_atlas_texture,
+            &player.tile,
+            &player_rect
+            );
 
     SDL_RenderPresent(renderer);
 }
 
 void destroy_window(void) {
+    SDL_DestroyTexture(tile_atlas_texture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
 
 int main() {
-    game_is_running = initialize_window(); 
-
-    setup();
+    game_is_running = initialize_window() && setup(); 
 
     while (game_is_running) {
         process_input();
