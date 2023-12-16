@@ -3,6 +3,7 @@
 #include <SDL2/SDL_image.h>
 #include "./game.h"
 #include "./player.h"
+#include "./court.h"
 
 unsigned short game_is_running = FALSE;
 SDL_Window* window = NULL;
@@ -12,6 +13,13 @@ SDL_Texture* tile_atlas_texture;
 
 int last_frame_time = 0;
 
+struct court_tiles {
+    SDL_Rect line_north_south;
+    SDL_Rect line_west_east;
+    SDL_Rect corner_west_north;
+    SDL_Rect t_shape_west_north_east;
+    SDL_Rect cross;
+} court_tiles;
 
 struct player {
     float x;
@@ -52,6 +60,19 @@ unsigned short initialize_window(void) {
     return TRUE;
 }
 
+SDL_Rect setup_tile_rect(
+        int rect_x,
+        int rect_y,
+        unsigned int rect_w,
+        unsigned int rect_h) {
+    SDL_Rect rect;
+    rect.x = rect_x;
+    rect.y = rect_y;
+    rect.w = rect_w;
+    rect.h = rect_h;
+    return rect;
+}
+
 unsigned int setup(void) {
     SDL_Surface* tile_atlas_surface = IMG_Load("resources/tile_atlas.png");
     if (!tile_atlas_surface) {
@@ -66,17 +87,56 @@ unsigned int setup(void) {
         return FALSE;
     }
 
-    SDL_Rect player_tile_rect;
-    player_tile_rect.x = TILE_ATLAS_PLAYER_COL * TILE_SIZE;
-    player_tile_rect.y = TILE_ATLAS_PLAYER_ROW * TILE_SIZE;
-    player_tile_rect.w = TILE_SIZE;
-    player_tile_rect.h = TILE_SIZE;
+    SDL_Rect court_tile_line_north_south = setup_tile_rect(
+            TILE_ATLAS_COURT_LINE_NORTH_SOUTH_COL * TILE_SIZE,
+            TILE_ATLAS_COURT_LINE_NORTH_SOUTH_ROW * TILE_SIZE,
+            TILE_SIZE,
+            TILE_SIZE
+            );
+    SDL_Rect court_tile_line_west_east = setup_tile_rect(
+            TILE_ATLAS_COURT_LINE_WEST_EAST_COL * TILE_SIZE,
+            TILE_ATLAS_COURT_LINE_WEST_EAST_ROW * TILE_SIZE,
+            TILE_SIZE,
+            TILE_SIZE
+            );
+    SDL_Rect court_tile_corner_west_north = setup_tile_rect(
+            TILE_ATLAS_COURT_CORNER_WEST_NORTH_COL * TILE_SIZE,
+            TILE_ATLAS_COURT_CORNER_WEST_NORTH_ROW * TILE_SIZE,
+            TILE_SIZE,
+            TILE_SIZE
+            );
+    SDL_Rect court_tile_t_shape_west_north_east = setup_tile_rect(
+            TILE_ATLAS_COURT_T_SHAPE_WEST_NORTH_EAST_COL * TILE_SIZE,
+            TILE_ATLAS_COURT_T_SHAPE_WEST_NORTH_EAST_ROW * TILE_SIZE,
+            TILE_SIZE,
+            TILE_SIZE
+            );
+    SDL_Rect court_tile_cross = setup_tile_rect(
+            TILE_ATLAS_COURT_CROSS_COL * TILE_SIZE,
+            TILE_ATLAS_COURT_CROSS_ROW * TILE_SIZE,
+            TILE_SIZE,
+            TILE_SIZE
+            );
 
-    SDL_Rect player_range_tile_rect;
-    player_range_tile_rect.x = TILE_ATLAS_PLAYER_RANGE_COL * TILE_SIZE;
-    player_range_tile_rect.y = TILE_ATLAS_PLAYER_RANGE_ROW * TILE_SIZE;
-    player_range_tile_rect.w = TILE_SIZE;
-    player_range_tile_rect.h = TILE_SIZE;
+    court_tiles.line_north_south = court_tile_line_north_south;
+    court_tiles.line_west_east = court_tile_line_west_east;
+    court_tiles.corner_west_north = court_tile_corner_west_north;
+    court_tiles.t_shape_west_north_east = court_tile_t_shape_west_north_east;
+    court_tiles.cross = court_tile_cross;
+
+    SDL_Rect player_tile_rect = setup_tile_rect(
+            TILE_ATLAS_PLAYER_COL * TILE_SIZE,
+            TILE_ATLAS_PLAYER_ROW * TILE_SIZE,
+            TILE_SIZE,
+            TILE_SIZE
+            );
+
+    SDL_Rect player_range_tile_rect = setup_tile_rect(
+            TILE_ATLAS_PLAYER_RANGE_COL * TILE_SIZE,
+            TILE_ATLAS_PLAYER_RANGE_ROW * TILE_SIZE,
+            TILE_SIZE,
+            TILE_SIZE
+            );
 
     player.x = 20;
     player.y = 20;
@@ -171,6 +231,23 @@ void update(void) {
 void render(void) {
     SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
     SDL_RenderClear(renderer);
+
+    // render top left corner of court
+    SDL_Rect court_0_0 = {
+        COURT_X,
+        COURT_Y,
+        court_tiles.corner_west_north.w,
+        court_tiles.corner_west_north.h
+    };
+    SDL_RenderCopyEx(
+            renderer,
+            tile_atlas_texture,
+            &court_tiles.corner_west_north,
+            &court_0_0,
+            180,
+            NULL,
+            SDL_FLIP_NONE
+            );
 
     SDL_Rect player_rect = {
         (int) player.x,
