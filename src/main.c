@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include "./constants.h"
-#include "./player_constants.h"
+#include "./game.h"
+#include "./player.h"
 
 unsigned short game_is_running = FALSE;
 SDL_Window* window = NULL;
@@ -12,11 +12,13 @@ SDL_Texture* tile_atlas_texture;
 
 int last_frame_time = 0;
 
+
 struct player {
     float x;
     float y;
-    unsigned int direction;
+    Player_Input input;
     SDL_Rect tile;
+    SDL_Rect range_tile;
 } player;
 
 unsigned short initialize_window(void) {
@@ -70,10 +72,24 @@ unsigned int setup(void) {
     player_tile_rect.w = TILE_SIZE;
     player_tile_rect.h = TILE_SIZE;
 
+    SDL_Rect player_range_tile_rect;
+    player_range_tile_rect.x = TILE_ATLAS_PLAYER_RANGE_COL * TILE_SIZE;
+    player_range_tile_rect.y = TILE_ATLAS_PLAYER_RANGE_ROW * TILE_SIZE;
+    player_range_tile_rect.w = TILE_SIZE;
+    player_range_tile_rect.h = TILE_SIZE;
+
     player.x = 20;
     player.y = 20;
-    player.direction = 0;
+
+    player.input.up = FALSE;
+    player.input.down = FALSE;
+    player.input.left = FALSE;
+    player.input.right = FALSE;
+    player.input.action = FALSE;
+
     player.tile = player_tile_rect;
+
+    player.range_tile = player_range_tile_rect;
 
     return TRUE;
 }
@@ -91,18 +107,33 @@ void process_input(void) {
                 game_is_running = FALSE;
             }
             if (event.key.keysym.sym == SDLK_UP) {
-                player.direction = SDLK_UP;
+                player.input.up = TRUE;
             }
             if (event.key.keysym.sym == SDLK_DOWN) {
-                player.direction = SDLK_DOWN;
+                player.input.down = TRUE;
             }
             if (event.key.keysym.sym == SDLK_LEFT) {
-                player.direction = SDLK_LEFT;
+                player.input.left = TRUE;
             }
             if (event.key.keysym.sym == SDLK_RIGHT) {
-                player.direction = SDLK_RIGHT;
+                player.input.right = TRUE;
             }
             break;
+        case SDL_KEYUP:
+            if (event.key.keysym.sym == SDLK_UP) {
+                player.input.up = FALSE;
+            }
+            if (event.key.keysym.sym == SDLK_DOWN) {
+                player.input.down = FALSE;
+            }
+            if (event.key.keysym.sym == SDLK_LEFT) {
+                player.input.left = FALSE;
+            }
+            if (event.key.keysym.sym == SDLK_RIGHT) {
+                player.input.right = FALSE;
+            }
+            break;
+
     }
 }
 
@@ -120,20 +151,16 @@ void update(void) {
     int x_velocity = 0;
     int y_velocity = 0;
 
-    if (player.direction == SDLK_UP
-            && player.direction != SDLK_DOWN) {
+    if (player.input.up && !player.input.down) {
         y_velocity = -PLAYER_SPEED;
     }
-    if (player.direction == SDLK_DOWN
-            && player.direction != SDLK_UP) {
+    if (player.input.down && !player.input.up) {
         y_velocity = PLAYER_SPEED;
     }
-    if (player.direction == SDLK_LEFT
-            && player.direction != SDLK_RIGHT) {
+    if (player.input.left && !player.input.right) {
         x_velocity = -PLAYER_SPEED;
     }
-    if (player.direction == SDLK_RIGHT
-            && player.direction != SDLK_LEFT) {
+    if (player.input.right && !player.input.left) {
         x_velocity = PLAYER_SPEED;
     }
 
@@ -142,7 +169,7 @@ void update(void) {
 }
 
 void render(void) {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
     SDL_RenderClear(renderer);
 
     SDL_Rect player_rect = {
@@ -156,6 +183,29 @@ void render(void) {
             tile_atlas_texture,
             &player.tile,
             &player_rect
+            );
+
+    unsigned int player_range_tile_width =
+        player.range_tile.w * PLAYER_RANGE_FACTOR;
+    unsigned int player_range_tile_height =
+        player.range_tile.h * PLAYER_RANGE_FACTOR;
+    // move player range rect so the player rect is in its center
+    int player_range_tile_x =
+        player.x - (int) (player_range_tile_width - player.tile.w) / 2; 
+    int player_range_tile_y =
+        player.y - (int) (player_range_tile_height - player.tile.h) / 2; 
+
+    SDL_Rect player_range_rect = {
+        (int) player_range_tile_x,
+        (int) player_range_tile_y,
+        (int) player_range_tile_width,
+        (int) player_range_tile_height
+    };
+    SDL_RenderCopy(
+            renderer,
+            tile_atlas_texture,
+            &player.range_tile,
+            &player_range_rect
             );
 
     SDL_RenderPresent(renderer);
