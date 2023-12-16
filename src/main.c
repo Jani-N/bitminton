@@ -228,26 +228,135 @@ void update(void) {
     player.y += y_velocity * delta_time;
 }
 
+void render_court(void) {
+    unsigned int tile_count_for_court = sizeof(court) / sizeof(int);
+    for (unsigned int i = 0; i < tile_count_for_court; i++) {
+        unsigned int court_row = i / COURT_MAP_COL_COUNT;
+        unsigned int court_col = i % COURT_MAP_COL_COUNT;
+        SDL_Rect court_rect = {
+            COURT_X + (TILE_SIZE * court_col),
+            COURT_Y + (TILE_SIZE * court_row),
+            TILE_SIZE,
+            TILE_SIZE
+        };
+        switch (court[i]) {
+            case CORNER_EAST_SOUTH:
+                SDL_RenderCopyEx(
+                        renderer,
+                        tile_atlas_texture,
+                        &court_tiles.corner_west_north,
+                        &court_rect,
+                        CORNER_ANGLE_EAST_SOUTH,
+                        NULL,
+                        SDL_FLIP_NONE
+                        );
+                break; 
+            case CORNER_EAST_NORTH:
+                SDL_RenderCopyEx(
+                        renderer,
+                        tile_atlas_texture,
+                        &court_tiles.corner_west_north,
+                        &court_rect,
+                        CORNER_ANGLE_EAST_NORTH,
+                        NULL,
+                        SDL_FLIP_NONE
+                        );
+                break; 
+            case CORNER_WEST_SOUTH:
+                SDL_RenderCopyEx(
+                        renderer,
+                        tile_atlas_texture,
+                        &court_tiles.corner_west_north,
+                        &court_rect,
+                        CORNER_ANGLE_WEST_SOUTH,
+                        NULL,
+                        SDL_FLIP_NONE
+                        );
+                break; 
+            case CORNER_WEST_NORTH:
+                SDL_RenderCopy(
+                        renderer,
+                        tile_atlas_texture,
+                        &court_tiles.corner_west_north,
+                        &court_rect
+                        );
+                break; 
+            case LINE_WEST_EAST:
+                SDL_RenderCopy(
+                        renderer,
+                        tile_atlas_texture,
+                        &court_tiles.line_west_east,
+                        &court_rect
+                        );
+                break; 
+            case LINE_NORTH_SOUTH:
+                SDL_RenderCopy(
+                        renderer,
+                        tile_atlas_texture,
+                        &court_tiles.line_north_south,
+                        &court_rect
+                        );
+                break; 
+            case T_WEST_SOUTH_EAST:
+                SDL_RenderCopyEx(
+                        renderer,
+                        tile_atlas_texture,
+                        &court_tiles.t_shape_west_north_east,
+                        &court_rect,
+                        T_SHAPE_ANGLE_WEST_SOUTH_EAST,
+                        NULL,
+                        SDL_FLIP_NONE
+                        );
+                break;
+            case T_WEST_NORTH_EAST:
+                SDL_RenderCopy(
+                        renderer,
+                        tile_atlas_texture,
+                        &court_tiles.t_shape_west_north_east,
+                        &court_rect
+                        );
+                break; 
+            case T_NORTH_EAST_SOUTH:
+                SDL_RenderCopyEx(
+                        renderer,
+                        tile_atlas_texture,
+                        &court_tiles.t_shape_west_north_east,
+                        &court_rect,
+                        T_SHAPE_ANGLE_NORTH_EAST_SOUTH,
+                        NULL,
+                        SDL_FLIP_NONE
+                        );
+                break;
+            case T_NORTH_WEST_SOUTH:
+                SDL_RenderCopyEx(
+                        renderer,
+                        tile_atlas_texture,
+                        &court_tiles.t_shape_west_north_east,
+                        &court_rect,
+                        T_SHAPE_ANGLE_NORTH_WEST_SOUTH,
+                        NULL,
+                        SDL_FLIP_NONE
+                        );
+                break;
+            case CROSS:
+                SDL_RenderCopy(
+                        renderer,
+                        tile_atlas_texture,
+                        &court_tiles.cross,
+                        &court_rect
+                        );
+                break; 
+            default:
+                break;
+        }
+    }
+}
+
 void render(void) {
     SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
     SDL_RenderClear(renderer);
 
-    // render top left corner of court
-    SDL_Rect court_0_0 = {
-        COURT_X,
-        COURT_Y,
-        court_tiles.corner_west_north.w,
-        court_tiles.corner_west_north.h
-    };
-    SDL_RenderCopyEx(
-            renderer,
-            tile_atlas_texture,
-            &court_tiles.corner_west_north,
-            &court_0_0,
-            180,
-            NULL,
-            SDL_FLIP_NONE
-            );
+    render_court();
 
     SDL_Rect player_rect = {
         (int) player.x,

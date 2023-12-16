@@ -1,5 +1,7 @@
-#define COURT_X 100
+#define COURT_X 0
 #define COURT_Y 0
+
+#define COURT_MAP_COL_COUNT  11
 
 /*
 * A map of the court
@@ -8,7 +10,6 @@
 // C-T--T--T-C
 // | |  |  | |
 // T-X--X--X-T
-// | |  |  | |
 // | |  |  | |
 // | |  |  | |
 // | |  |  | |
@@ -24,36 +25,9 @@
 // | |  |  | |
 // | |  |  | |
 // | |  |  | |
-// | |  |  | |
 // T-X--X--X-T
 // | |  |  | |
 // C-T--T--T-C
-
-const int court[] = {
-    CORNER_EAST_SOUTH,  LINE_WEST_EAST, T_WEST_SOUTH_EAST,  LINE_WEST_EAST, LINE_WEST_EAST, T_WEST_SOUTH_EAST,  LINE_WEST_EAST, LINE_WEST_EAST, T_WEST_SOUTH_EAST,  LINE_WEST_EAST, CORNER_WEST_SOUTH,
-    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
-    T_NORTH_EAST_SOUTH, LINE_WEST_EAST, CROSS,              LINE_WEST_EAST, LINE_WEST_EAST, CROSS,              LINE_WEST_EAST, LINE_WEST_EAST, CROSS,              LINE_WEST_EAST, T_NORTH_WEST_SOUTH,
-    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
-    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
-    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
-    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
-    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
-    T_NORTH_EAST_SOUTH, LINE_WEST_EAST, CROSS,              LINE_WEST_EAST, LINE_WEST_EAST, T_WEST_NORTH_EAST,  LINE_WEST_EAST, LINE_WEST_EAST, CROSS,              LINE_WEST_EAST, T_NORTH_WEST_SOUTH,
-    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
-    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
-    // net
-    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
-    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
-    T_NORTH_EAST_SOUTH, LINE_WEST_EAST, CROSS,              LINE_WEST_EAST, LINE_WEST_EAST, T_WEST_SOUTH_EAST,  LINE_WEST_EAST, LINE_WEST_EAST, CROSS,              LINE_WEST_EAST, T_NORTH_WEST_SOUTH,
-    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
-    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
-    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
-    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
-    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
-    T_NORTH_EAST_SOUTH, LINE_WEST_EAST, CROSS,              LINE_WEST_EAST, LINE_WEST_EAST, CROSS,              LINE_WEST_EAST, LINE_WEST_EAST, CROSS,              LINE_WEST_EAST, T_NORTH_WEST_SOUTH,
-    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
-    CORNER_EAST_NORTH,  LINE_WEST_EAST, T_WEST_NORTH_EAST,  LINE_WEST_EAST, LINE_WEST_EAST, T_WEST_NORTH_EAST,  LINE_WEST_EAST, LINE_WEST_EAST, T_WEST_NORTH_EAST,  LINE_WEST_EAST, CORNER_WEST_NORTH
-};
 
 #define CORNER_EAST_SOUTH 1
 #define CORNER_EAST_NORTH 2
@@ -69,6 +43,30 @@ const int court[] = {
 #define T_NORTH_WEST_SOUTH 10
 
 #define CROSS 11
+
+const int court[] = {
+    CORNER_EAST_SOUTH,  LINE_WEST_EAST, T_WEST_SOUTH_EAST,  LINE_WEST_EAST, LINE_WEST_EAST, T_WEST_SOUTH_EAST,  LINE_WEST_EAST, LINE_WEST_EAST, T_WEST_SOUTH_EAST,  LINE_WEST_EAST, CORNER_WEST_SOUTH,
+    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
+    T_NORTH_EAST_SOUTH, LINE_WEST_EAST, CROSS,              LINE_WEST_EAST, LINE_WEST_EAST, CROSS,              LINE_WEST_EAST, LINE_WEST_EAST, CROSS,              LINE_WEST_EAST, T_NORTH_WEST_SOUTH,
+    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
+    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
+    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
+    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
+    T_NORTH_EAST_SOUTH, LINE_WEST_EAST, CROSS,              LINE_WEST_EAST, LINE_WEST_EAST, T_WEST_NORTH_EAST,  LINE_WEST_EAST, LINE_WEST_EAST, CROSS,              LINE_WEST_EAST, T_NORTH_WEST_SOUTH,
+    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             -1,                 -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
+    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             -1,                 -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
+    // net
+    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             -1,                 -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
+    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             -1,                 -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
+    T_NORTH_EAST_SOUTH, LINE_WEST_EAST, CROSS,              LINE_WEST_EAST, LINE_WEST_EAST, T_WEST_SOUTH_EAST,  LINE_WEST_EAST, LINE_WEST_EAST, CROSS,              LINE_WEST_EAST, T_NORTH_WEST_SOUTH,
+    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
+    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
+    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
+    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
+    T_NORTH_EAST_SOUTH, LINE_WEST_EAST, CROSS,              LINE_WEST_EAST, LINE_WEST_EAST, CROSS,              LINE_WEST_EAST, LINE_WEST_EAST, CROSS,              LINE_WEST_EAST, T_NORTH_WEST_SOUTH,
+    LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             -1,             LINE_NORTH_SOUTH,   -1,             LINE_NORTH_SOUTH,
+    CORNER_EAST_NORTH,  LINE_WEST_EAST, T_WEST_NORTH_EAST,  LINE_WEST_EAST, LINE_WEST_EAST, T_WEST_NORTH_EAST,  LINE_WEST_EAST, LINE_WEST_EAST, T_WEST_NORTH_EAST,  LINE_WEST_EAST, CORNER_WEST_NORTH
+};
 
 #define TILE_ATLAS_COURT_LINE_NORTH_SOUTH_COL 0
 #define TILE_ATLAS_COURT_LINE_NORTH_SOUTH_ROW 0
@@ -87,8 +85,8 @@ const int court[] = {
 #define TILE_ATLAS_COURT_T_SHAPE_WEST_NORTH_EAST_ROW 0
 
 #define T_SHAPE_ANGLE_NORTH_EAST_SOUTH 90
-#define T_SHAPE_ANGLE_EAST_SOUTH_WEST 180
-#define T_SHAPE_ANGLE_SOUTH_WEST_NORTH 270
+#define T_SHAPE_ANGLE_WEST_SOUTH_EAST 180
+#define T_SHAPE_ANGLE_NORTH_WEST_SOUTH 270
 
 #define TILE_ATLAS_COURT_CROSS_COL 4
 #define TILE_ATLAS_COURT_CROSS_ROW 0
