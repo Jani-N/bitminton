@@ -199,7 +199,7 @@ void process_input(void) {
 
 void update(void) {
     // Lock execution
-    int time_to_wait = FRAME_TARGET_TIME - SDL_GetTicks() - last_frame_time;
+    int time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - last_frame_time);
     if (time_to_wait > 0 && time_to_wait <= FRAME_TARGET_TIME) {
         SDL_Delay(time_to_wait);
     }
