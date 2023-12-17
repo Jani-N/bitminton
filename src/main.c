@@ -16,8 +16,14 @@ int last_frame_time = 0;
 struct court_tiles {
     SDL_Rect line_north_south;
     SDL_Rect line_west_east;
-    SDL_Rect corner_west_north;
+    SDL_Rect t_shape_north_east_south;
     SDL_Rect t_shape_west_north_east;
+    SDL_Rect t_shape_west_south_east;
+    SDL_Rect t_shape_north_west_south;
+    SDL_Rect corner_west_north;
+    SDL_Rect corner_east_north;
+    SDL_Rect corner_east_south;
+    SDL_Rect corner_west_south;
     SDL_Rect cross;
 } court_tiles;
 
@@ -99,15 +105,51 @@ unsigned int setup(void) {
             TILE_SIZE,
             TILE_SIZE
             );
-    SDL_Rect court_tile_corner_west_north = setup_tile_rect(
-            TILE_ATLAS_COURT_CORNER_WEST_NORTH_COL * TILE_SIZE,
-            TILE_ATLAS_COURT_CORNER_WEST_NORTH_ROW * TILE_SIZE,
+    SDL_Rect court_tile_t_shape_north_east_south = setup_tile_rect(
+            TILE_ATLAS_COURT_T_SHAPE_NORTH_EAST_SOUTH_COL * TILE_SIZE,
+            TILE_ATLAS_COURT_T_SHAPE_NORTH_EAST_SOUTH_ROW * TILE_SIZE,
             TILE_SIZE,
             TILE_SIZE
             );
     SDL_Rect court_tile_t_shape_west_north_east = setup_tile_rect(
             TILE_ATLAS_COURT_T_SHAPE_WEST_NORTH_EAST_COL * TILE_SIZE,
             TILE_ATLAS_COURT_T_SHAPE_WEST_NORTH_EAST_ROW * TILE_SIZE,
+            TILE_SIZE,
+            TILE_SIZE
+            );
+    SDL_Rect court_tile_t_shape_west_south_east = setup_tile_rect(
+            TILE_ATLAS_COURT_T_SHAPE_WEST_SOUTH_EAST_COL * TILE_SIZE,
+            TILE_ATLAS_COURT_T_SHAPE_WEST_SOUTH_EAST_ROW * TILE_SIZE,
+            TILE_SIZE,
+            TILE_SIZE
+            );
+    SDL_Rect court_tile_t_shape_north_west_south = setup_tile_rect(
+            TILE_ATLAS_COURT_T_SHAPE_NORTH_WEST_SOUTH_COL * TILE_SIZE,
+            TILE_ATLAS_COURT_T_SHAPE_NORTH_WEST_SOUTH_ROW * TILE_SIZE,
+            TILE_SIZE,
+            TILE_SIZE
+            );
+    SDL_Rect court_tile_corner_west_north = setup_tile_rect(
+            TILE_ATLAS_COURT_CORNER_WEST_NORTH_COL * TILE_SIZE,
+            TILE_ATLAS_COURT_CORNER_WEST_NORTH_ROW * TILE_SIZE,
+            TILE_SIZE,
+            TILE_SIZE
+            );
+    SDL_Rect court_tile_corner_east_north = setup_tile_rect(
+            TILE_ATLAS_COURT_CORNER_EAST_NORTH_COL * TILE_SIZE,
+            TILE_ATLAS_COURT_CORNER_EAST_NORTH_ROW * TILE_SIZE,
+            TILE_SIZE,
+            TILE_SIZE
+            );
+    SDL_Rect court_tile_corner_east_south = setup_tile_rect(
+            TILE_ATLAS_COURT_CORNER_EAST_SOUTH_COL * TILE_SIZE,
+            TILE_ATLAS_COURT_CORNER_EAST_SOUTH_ROW * TILE_SIZE,
+            TILE_SIZE,
+            TILE_SIZE
+            );
+    SDL_Rect court_tile_corner_west_south = setup_tile_rect(
+            TILE_ATLAS_COURT_CORNER_WEST_SOUTH_COL * TILE_SIZE,
+            TILE_ATLAS_COURT_CORNER_WEST_SOUTH_ROW * TILE_SIZE,
             TILE_SIZE,
             TILE_SIZE
             );
@@ -120,8 +162,14 @@ unsigned int setup(void) {
 
     court_tiles.line_north_south = court_tile_line_north_south;
     court_tiles.line_west_east = court_tile_line_west_east;
-    court_tiles.corner_west_north = court_tile_corner_west_north;
+    court_tiles.t_shape_north_east_south = court_tile_t_shape_north_east_south;
     court_tiles.t_shape_west_north_east = court_tile_t_shape_west_north_east;
+    court_tiles.t_shape_west_south_east = court_tile_t_shape_west_south_east;
+    court_tiles.t_shape_north_west_south = court_tile_t_shape_north_west_south;
+    court_tiles.corner_west_north = court_tile_corner_west_north;
+    court_tiles.corner_east_north = court_tile_corner_east_north;
+    court_tiles.corner_east_south = court_tile_corner_east_south;
+    court_tiles.corner_west_south = court_tile_corner_west_south;
     court_tiles.cross = court_tile_cross;
 
     SDL_Rect player_tile_rect = setup_tile_rect(
@@ -240,44 +288,11 @@ void render_court(void) {
             TILE_SIZE
         };
         switch (court[i]) {
-            case CORNER_EAST_SOUTH:
-                SDL_RenderCopyEx(
-                        renderer,
-                        tile_atlas_texture,
-                        &court_tiles.corner_west_north,
-                        &court_rect,
-                        CORNER_ANGLE_EAST_SOUTH,
-                        NULL,
-                        SDL_FLIP_NONE
-                        );
-                break; 
-            case CORNER_EAST_NORTH:
-                SDL_RenderCopyEx(
-                        renderer,
-                        tile_atlas_texture,
-                        &court_tiles.corner_west_north,
-                        &court_rect,
-                        CORNER_ANGLE_EAST_NORTH,
-                        NULL,
-                        SDL_FLIP_NONE
-                        );
-                break; 
-            case CORNER_WEST_SOUTH:
-                SDL_RenderCopyEx(
-                        renderer,
-                        tile_atlas_texture,
-                        &court_tiles.corner_west_north,
-                        &court_rect,
-                        CORNER_ANGLE_WEST_SOUTH,
-                        NULL,
-                        SDL_FLIP_NONE
-                        );
-                break; 
-            case CORNER_WEST_NORTH:
+            case LINE_NORTH_SOUTH:
                 SDL_RenderCopy(
                         renderer,
                         tile_atlas_texture,
-                        &court_tiles.corner_west_north,
+                        &court_tiles.line_north_south,
                         &court_rect
                         );
                 break; 
@@ -289,23 +304,12 @@ void render_court(void) {
                         &court_rect
                         );
                 break; 
-            case LINE_NORTH_SOUTH:
+            case T_NORTH_EAST_SOUTH:
                 SDL_RenderCopy(
                         renderer,
                         tile_atlas_texture,
-                        &court_tiles.line_north_south,
+                        &court_tiles.t_shape_north_east_south,
                         &court_rect
-                        );
-                break; 
-            case T_WEST_SOUTH_EAST:
-                SDL_RenderCopyEx(
-                        renderer,
-                        tile_atlas_texture,
-                        &court_tiles.t_shape_west_north_east,
-                        &court_rect,
-                        T_SHAPE_ANGLE_WEST_SOUTH_EAST,
-                        NULL,
-                        SDL_FLIP_NONE
                         );
                 break;
             case T_WEST_NORTH_EAST:
@@ -316,28 +320,54 @@ void render_court(void) {
                         &court_rect
                         );
                 break; 
-            case T_NORTH_EAST_SOUTH:
-                SDL_RenderCopyEx(
+            case T_WEST_SOUTH_EAST:
+                SDL_RenderCopy(
                         renderer,
                         tile_atlas_texture,
-                        &court_tiles.t_shape_west_north_east,
-                        &court_rect,
-                        T_SHAPE_ANGLE_NORTH_EAST_SOUTH,
-                        NULL,
-                        SDL_FLIP_NONE
+                        &court_tiles.t_shape_west_south_east,
+                        &court_rect
                         );
                 break;
             case T_NORTH_WEST_SOUTH:
-                SDL_RenderCopyEx(
+                SDL_RenderCopy(
                         renderer,
                         tile_atlas_texture,
-                        &court_tiles.t_shape_west_north_east,
-                        &court_rect,
-                        T_SHAPE_ANGLE_NORTH_WEST_SOUTH,
-                        NULL,
-                        SDL_FLIP_NONE
+                        &court_tiles.t_shape_north_west_south,
+                        &court_rect
                         );
                 break;
+            case CORNER_WEST_NORTH:
+                SDL_RenderCopy(
+                        renderer,
+                        tile_atlas_texture,
+                        &court_tiles.corner_west_north,
+                        &court_rect
+                        );
+                break; 
+            case CORNER_EAST_NORTH:
+                SDL_RenderCopy(
+                        renderer,
+                        tile_atlas_texture,
+                        &court_tiles.corner_east_north,
+                        &court_rect
+                        );
+                break; 
+            case CORNER_EAST_SOUTH:
+                SDL_RenderCopy(
+                        renderer,
+                        tile_atlas_texture,
+                        &court_tiles.corner_east_south,
+                        &court_rect
+                        );
+                break; 
+            case CORNER_WEST_SOUTH:
+                SDL_RenderCopy(
+                        renderer,
+                        tile_atlas_texture,
+                        &court_tiles.corner_west_south,
+                        &court_rect
+                        );
+                break; 
             case CROSS:
                 SDL_RenderCopy(
                         renderer,
